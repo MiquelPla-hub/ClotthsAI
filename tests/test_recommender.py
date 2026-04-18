@@ -153,3 +153,34 @@ def test_generate_suggestions_limit():
     ]
     result = generate_suggestions(items, limit=2)
     assert len(result) == 2
+
+
+def test_get_primary_style_returns_most_common():
+    items = [
+        make_item('top', 'white', 'casual'),
+        make_item('bottom', 'navy', 'casual'),
+        make_item('shoes', 'white', 'formal'),
+    ]
+    assert get_primary_style(items) == 'casual'
+
+
+def test_get_primary_style_uses_first_tag_only():
+    # Item has 'casual,formal' — only 'casual' (first tag) should count
+    items = [
+        make_item('top', 'white', 'casual,formal'),
+        make_item('bottom', 'navy', 'casual'),
+        make_item('shoes', 'white', 'formal'),
+    ]
+    # first tags: casual, casual, formal -> casual wins
+    assert get_primary_style(items) == 'casual'
+
+
+def test_get_primary_style_empty_returns_casual():
+    items = [make_item('top', 'white', '')]
+    assert get_primary_style(items) == 'casual'
+
+
+def test_get_color_group_earth():
+    assert get_color_group('brown') == 'earth'
+    assert get_color_group('olive') == 'earth'
+    assert get_color_group('burgundy') == 'earth'

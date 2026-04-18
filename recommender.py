@@ -81,12 +81,14 @@ def score_outfit(items):
 
 
 def get_primary_style(items):
-    all_styles = []
+    styles = []
     for item in items:
-        all_styles.extend([t.strip() for t in item.style_tags.split(',') if t.strip()])
-    if not all_styles:
+        tags = [t.strip() for t in item.style_tags.split(',') if t.strip()]
+        if tags:
+            styles.append(tags[0])
+    if not styles:
         return 'casual'
-    return max(set(all_styles), key=all_styles.count)
+    return max(sorted(set(styles)), key=styles.count)
 
 
 def generate_suggestions(items, style_filter=None, limit=20):
@@ -103,7 +105,7 @@ def generate_suggestions(items, style_filter=None, limit=20):
         score = score_outfit(combo)
         primary_style = get_primary_style(combo)
 
-        if style_filter and style_filter.lower() != 'all' and primary_style != style_filter.lower():
+        if style_filter and style_filter.lower() != 'all' and primary_style.lower() != style_filter.lower():
             continue
 
         outfits.append({
