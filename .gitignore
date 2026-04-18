@@ -1,0 +1,8 @@
+wardrobe.db
+uploads/
+__pycache__/
+*.pyc
+.env
+.superpowers/
+*.egg-info/
+.pytest_cache/
