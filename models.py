@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 from flask_sqlalchemy import SQLAlchemy
 
@@ -16,7 +16,7 @@ class ClothingItem(db.Model):
     style_tags = db.Column(db.String(100), nullable=False)
     season = db.Column(db.String(20), nullable=False, default='all')
     photo_path = db.Column(db.String(200), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     def to_dict(self):
         return {
@@ -37,10 +37,10 @@ class Outfit(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=True)
-    item_ids = db.Column(db.String(200), nullable=False)
+    item_ids = db.Column(db.Text, nullable=False)
     score = db.Column(db.Float, nullable=False)
     occasion = db.Column(db.String(50), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     def to_dict(self):
         return {
