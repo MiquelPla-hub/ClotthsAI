@@ -81,6 +81,11 @@ def test_delete_clothes(client):
     assert client.get('/api/clothes').json == []
 
 
+def test_delete_nonexistent_item_returns_404(client):
+    resp = client.delete('/api/clothes/99999')
+    assert resp.status_code == 404
+
+
 def test_suggest_empty_wardrobe(client):
     resp = client.get('/api/suggest')
     assert resp.status_code == 200
@@ -106,6 +111,11 @@ def test_suggest_style_filter(client):
     resp = client.get('/api/suggest?style=formal')
     assert resp.status_code == 200
     assert resp.json == []
+
+
+def test_suggest_invalid_limit_returns_400(client):
+    resp = client.get('/api/suggest?limit=abc')
+    assert resp.status_code == 400
 
 
 def test_get_outfits_empty(client):

@@ -1,6 +1,7 @@
 import os
 import uuid
 from flask import Flask, request, jsonify, send_from_directory, abort
+from werkzeug.utils import secure_filename
 from models import db, ClothingItem, Outfit
 from recommender import generate_suggestions
 
@@ -8,7 +9,6 @@ app = Flask(__name__, static_folder='static', static_url_path='')
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "wardrobe.db")}'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'uploads')
 
 db.init_app(app)
@@ -51,7 +51,8 @@ def add_clothes():
         return jsonify({'error': 'Photo is required'}), 400
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    filename = f"{uuid.uuid4().hex}_{photo.filename}"
+    safe_name = secure_filename(photo.filename) or 'upload'
+    filename = f"{uuid.uuid4().hex}_{safe_name}"
     photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     item = ClothingItem(
@@ -90,7 +91,10 @@ def get_outfits():
 @app.route('/api/suggest', methods=['GET'])
 def suggest_outfits():
     style = request.args.get('style', 'all')
-    limit = int(request.args.get('limit', 20))
+    try:
+        limit = max(1, int(request.args.get('limit', 20)))
+    except (ValueError, TypeError):
+        return jsonify({'error': 'limit must be a positive integer'}), 400
     items = ClothingItem.query.all()
     suggestions = generate_suggestions(items, style_filter=style, limit=limit)
     return jsonify(suggestions)
