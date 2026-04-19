@@ -1,14 +1,16 @@
 import pytest
 import json
-from app import app as flask_app
+from app import create_app
 from models import db, ClothingItem, Outfit
 
 
 @pytest.fixture
 def app(tmp_path):
-    flask_app.config['TESTING'] = True
-    flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    flask_app.config['UPLOAD_FOLDER'] = str(tmp_path)
+    flask_app = create_app({
+        'TESTING': True,
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
+        'UPLOAD_FOLDER': str(tmp_path),
+    })
     with flask_app.app_context():
         db.create_all()
         yield flask_app
