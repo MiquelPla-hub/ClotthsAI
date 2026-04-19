@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClothsAI</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <span class="logo">ClothsAI</span>
+      <nav class="main-tabs">
+        <button class="tab-btn active" data-tab="outfits">Outfits</button>
+        <button class="tab-btn" data-tab="wardrobe">Wardrobe</button>
+        <button class="tab-btn" data-tab="add">Add Item</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="tab-outfits" class="tab-panel active">
+      <div class="style-filter">
+        <button class="filter-btn active" data-style="all">All</button>
+        <button class="filter-btn" data-style="casual">Casual</button>
+        <button class="filter-btn" data-style="smart-casual">Smart Casual</button>
+        <button class="filter-btn" data-style="formal">Formal</button>
+        <button class="filter-btn" data-style="sporty">Sporty</button>
+      </div>
+      <div id="hero-outfit"></div>
+      <div id="outfit-grid" class="outfit-grid"></div>
+      <p id="no-outfits" class="empty-msg" hidden>
+        No outfits found. Add tops, bottoms, and shoes to get recommendations!
+      </p>
+    </section>
+
+    <section id="tab-wardrobe" class="tab-panel">
+      <div class="category-filter">
+        <button class="filter-btn active" data-category="all">All</button>
+        <button class="filter-btn" data-category="top">Tops</button>
+        <button class="filter-btn" data-category="bottom">Bottoms</button>
+        <button class="filter-btn" data-category="shoes">Shoes</button>
+        <button class="filter-btn" data-category="outerwear">Outerwear</button>
+        <button class="filter-btn" data-category="accessory">Accessories</button>
+      </div>
+      <div id="wardrobe-grid" class="wardrobe-grid"></div>
+      <p id="no-clothes" class="empty-msg" hidden>Your wardrobe is empty. Add some clothes!</p>
+    </section>
+
+    <section id="tab-add" class="tab-panel">
+      <div class="form-container">
+        <h2>Add Clothing Item</h2>
+        <form id="add-form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" name="name" required placeholder="e.g. White Oxford Shirt">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select name="category" required>
+              <option value="">Select category</option>
+              <option value="top">Top</option>
+              <option value="bottom">Bottom</option>
+              <option value="shoes">Shoes</option>
+              <option value="outerwear">Outerwear</option>
+              <option value="accessory">Accessory</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Primary Color</label>
+            <select name="color_primary" required>
+              <option value="">Select color</option>
+              <option value="white">White</option>
+              <option value="black">Black</option>
+              <option value="grey">Grey</option>
+              <option value="navy">Navy</option>
+              <option value="beige">Beige</option>
+              <option value="tan">Tan</option>
+              <option value="blue">Blue</option>
+              <option value="green">Green</option>
+              <option value="red">Red</option>
+              <option value="orange">Orange</option>
+              <option value="yellow">Yellow</option>
+              <option value="purple">Purple</option>
+              <option value="pink">Pink</option>
+              <option value="brown">Brown</option>
+              <option value="olive">Olive</option>
+              <option value="burgundy">Burgundy</option>
+              <option value="teal">Teal</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Secondary Color (optional)</label>
+            <select name="color_secondary">
+              <option value="">None</option>
+              <option value="white">White</option>
+              <option value="black">Black</option>
+              <option value="grey">Grey</option>
+              <option value="navy">Navy</option>
+              <option value="beige">Beige</option>
+              <option value="blue">Blue</option>
+              <option value="red">Red</option>
+              <option value="brown">Brown</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Style</label>
+            <select name="style_tags" required>
+              <option value="">Select style</option>
+              <option value="casual">Casual</option>
+              <option value="smart-casual">Smart Casual</option>
+              <option value="formal">Formal</option>
+              <option value="sporty">Sporty</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Season</label>
+            <select name="season">
+              <option value="all">All seasons</option>
+              <option value="summer">Summer</option>
+              <option value="winter">Winter</option>
+              <option value="spring-fall">Spring / Fall</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Photo</label>
+            <input type="file" name="photo" accept="image/*" required>
+          </div>
+          <button type="submit" class="btn-primary">Add to Wardrobe</button>
+          <p id="add-success" class="success-msg" hidden>Item added successfully!</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
