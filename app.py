@@ -134,9 +134,24 @@ def create_app(config=None):
             limit = max(1, int(request.args.get('limit', 20)))
         except (ValueError, TypeError):
             return jsonify({'error': 'limit must be a positive integer'}), 400
-        items = ClothingItem.query.all()
-        suggestions = generate_suggestions(items, style_filter=style, limit=limit)
-        return jsonify(suggestions)
+
+        all_outfits = Outfit.query.order_by(Outfit.score.desc()).all()
+        result = []
+        for o in all_outfits:
+            if len(result) >= limit:
+                break
+            if style != 'all' and o.occasion != style:
+                continue
+            ids = json.loads(o.item_ids)
+            items = [db.session.get(ClothingItem, i) for i in ids]
+            items = [i for i in items if i]
+            result.append({
+                'id': o.id,
+                'score': o.score,
+                'occasion': o.occasion,
+                'items': [i.to_dict() for i in items],
+            })
+        return jsonify(result)
 
     return app
 
