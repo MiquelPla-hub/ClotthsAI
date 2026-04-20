@@ -51,7 +51,16 @@ def create_app(config=None):
             q = q.filter(ClothingItem.season.in_([season, 'all']))
         if style := request.args.get('style'):
             q = q.filter(ClothingItem.style_tags.contains(style))
-        return jsonify([item.to_dict() for item in q.all()])
+
+        all_outfits = Outfit.query.all()
+        outfit_id_sets = [set(json.loads(o.item_ids)) for o in all_outfits]
+
+        result = []
+        for item in q.all():
+            d = item.to_dict()
+            d['outfit_count'] = sum(1 for ids in outfit_id_sets if item.id in ids)
+            result.append(d)
+        return jsonify(result)
 
     @app.route('/api/clothes', methods=['POST'])
     def add_clothes():

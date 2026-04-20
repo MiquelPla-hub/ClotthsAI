@@ -144,3 +144,14 @@ def test_delete_regenerates_outfits(client):
     assert del_resp.status_code == 200
     resp = client.get('/api/outfits')
     assert resp.json == []
+
+
+def test_get_clothes_outfit_count(client):
+    post_item(client, 'White Shirt', 'top', 'white', 'casual')
+    post_item(client, 'Navy Chinos', 'bottom', 'navy', 'casual')
+    post_item(client, 'White Sneakers', 'shoes', 'white', 'casual')
+    resp = client.get('/api/clothes')
+    assert resp.status_code == 200
+    for item in resp.json:
+        assert 'outfit_count' in item
+        assert item['outfit_count'] == 1
