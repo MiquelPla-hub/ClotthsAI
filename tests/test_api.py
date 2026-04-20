@@ -155,3 +155,24 @@ def test_get_clothes_outfit_count(client):
     for item in resp.json:
         assert 'outfit_count' in item
         assert item['outfit_count'] == 1
+
+
+def test_get_outfits_filter_by_item_id(client):
+    r1 = post_item(client, 'White Shirt', 'top', 'white', 'casual')
+    post_item(client, 'Navy Chinos', 'bottom', 'navy', 'casual')
+    post_item(client, 'White Sneakers', 'shoes', 'white', 'casual')
+    shirt_id = r1.json['id']
+    resp = client.get(f'/api/outfits?item_id={shirt_id}')
+    assert resp.status_code == 200
+    assert len(resp.json) == 1
+    item_ids_in_outfit = [i['id'] for i in resp.json[0]['items']]
+    assert shirt_id in item_ids_in_outfit
+
+
+def test_get_outfits_filter_by_item_id_no_match(client):
+    post_item(client, 'White Shirt', 'top', 'white', 'casual')
+    post_item(client, 'Navy Chinos', 'bottom', 'navy', 'casual')
+    post_item(client, 'White Sneakers', 'shoes', 'white', 'casual')
+    resp = client.get('/api/outfits?item_id=99999')
+    assert resp.status_code == 200
+    assert resp.json == []

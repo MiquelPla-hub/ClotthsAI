@@ -110,8 +110,22 @@ def create_app(config=None):
 
     @app.route('/api/outfits', methods=['GET'])
     def get_outfits():
-        outfits = Outfit.query.order_by(Outfit.score.desc()).all()
-        return jsonify([o.to_dict() for o in outfits])
+        item_id = request.args.get('item_id', type=int)
+        all_outfits = Outfit.query.order_by(Outfit.score.desc()).all()
+        result = []
+        for o in all_outfits:
+            ids = json.loads(o.item_ids)
+            if item_id is not None and item_id not in ids:
+                continue
+            items = [db.session.get(ClothingItem, i) for i in ids]
+            items = [i for i in items if i]
+            result.append({
+                'id': o.id,
+                'score': o.score,
+                'occasion': o.occasion,
+                'items': [i.to_dict() for i in items],
+            })
+        return jsonify(result)
 
     @app.route('/api/suggest', methods=['GET'])
     def suggest_outfits():
