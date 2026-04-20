@@ -140,6 +140,7 @@ def test_delete_regenerates_outfits(client):
     post_item(client, 'Navy Chinos', 'bottom', 'navy', 'casual')
     add_resp = post_item(client, 'White Sneakers', 'shoes', 'white', 'casual')
     shoes_id = add_resp.json['id']
-    client.delete(f'/api/clothes/{shoes_id}')
+    del_resp = client.delete(f'/api/clothes/{shoes_id}')
+    assert del_resp.status_code == 200
     resp = client.get('/api/outfits')
     assert resp.json == []

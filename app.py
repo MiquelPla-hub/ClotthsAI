@@ -16,17 +16,23 @@ def create_app(config=None):
         app.config.update(config)
     db.init_app(app)
 
+    _OUTFIT_REGEN_LIMIT = 9999
+
     def regenerate_outfits():
-        Outfit.query.delete()
-        items = ClothingItem.query.all()
-        suggestions = generate_suggestions(items, style_filter='all', limit=9999)
-        for s in suggestions:
-            db.session.add(Outfit(
-                item_ids=json.dumps([i['id'] for i in s['items']]),
-                score=s['score'],
-                occasion=s['occasion'],
-            ))
-        db.session.commit()
+        try:
+            Outfit.query.delete()
+            items = ClothingItem.query.all()
+            suggestions = generate_suggestions(items, style_filter='all', limit=_OUTFIT_REGEN_LIMIT)
+            for s in suggestions:
+                db.session.add(Outfit(
+                    item_ids=json.dumps([i['id'] for i in s['items']]),
+                    score=s['score'],
+                    occasion=s['occasion'],
+                ))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
 
     @app.route('/')
     def index():
