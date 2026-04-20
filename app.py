@@ -1,5 +1,6 @@
 import os
 import uuid
+import json
 from flask import Flask, request, jsonify, send_from_directory, abort
 from werkzeug.utils import secure_filename
 from models import db, ClothingItem, Outfit
@@ -14,6 +15,18 @@ def create_app(config=None):
     if config:
         app.config.update(config)
     db.init_app(app)
+
+    def regenerate_outfits():
+        Outfit.query.delete()
+        items = ClothingItem.query.all()
+        suggestions = generate_suggestions(items, style_filter='all', limit=9999)
+        for s in suggestions:
+            db.session.add(Outfit(
+                item_ids=json.dumps([i['id'] for i in s['items']]),
+                score=s['score'],
+                occasion=s['occasion'],
+            ))
+        db.session.commit()
 
     @app.route('/')
     def index():
@@ -64,6 +77,7 @@ def create_app(config=None):
         )
         db.session.add(item)
         db.session.commit()
+        regenerate_outfits()
         return jsonify(item.to_dict()), 201
 
     @app.route('/api/clothes/<int:item_id>', methods=['DELETE'])
@@ -76,6 +90,7 @@ def create_app(config=None):
             os.remove(photo_path)
         db.session.delete(item)
         db.session.commit()
+        regenerate_outfits()
         return jsonify({'deleted': item_id})
 
     @app.route('/api/outfits', methods=['GET'])

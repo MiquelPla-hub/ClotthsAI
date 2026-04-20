@@ -124,3 +124,22 @@ def test_get_outfits_empty(client):
     resp = client.get('/api/outfits')
     assert resp.status_code == 200
     assert resp.json == []
+
+
+def test_add_clothes_regenerates_outfits(client):
+    post_item(client, 'White Shirt', 'top', 'white', 'casual')
+    post_item(client, 'Navy Chinos', 'bottom', 'navy', 'casual')
+    post_item(client, 'White Sneakers', 'shoes', 'white', 'casual')
+    resp = client.get('/api/outfits')
+    assert resp.status_code == 200
+    assert len(resp.json) == 1
+
+
+def test_delete_regenerates_outfits(client):
+    post_item(client, 'White Shirt', 'top', 'white', 'casual')
+    post_item(client, 'Navy Chinos', 'bottom', 'navy', 'casual')
+    add_resp = post_item(client, 'White Sneakers', 'shoes', 'white', 'casual')
+    shoes_id = add_resp.json['id']
+    client.delete(f'/api/clothes/{shoes_id}')
+    resp = client.get('/api/outfits')
+    assert resp.json == []
