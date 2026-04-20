@@ -28,7 +28,12 @@ document.getElementById('add-back').addEventListener('click', () => showScreen('
 let longPressTimer = null;
 
 async function loadWardrobe() {
-  const items = await fetch('/api/clothes').then(r => r.json());
+  let items;
+  try {
+    items = await fetch('/api/clothes').then(r => r.json());
+  } catch {
+    return;
+  }
   const grid = document.getElementById('wardrobe-grid');
   const empty = document.getElementById('no-clothes');
   grid.innerHTML = '';
@@ -53,7 +58,7 @@ async function loadWardrobe() {
     card.addEventListener('click', () => loadCarousel(item));
 
     card.addEventListener('pointerdown', () => {
-      longPressTimer = setTimeout(() => deleteItem(item.id), 600);
+      longPressTimer = setTimeout(() => deleteItem(item.id), 500);
     });
     card.addEventListener('pointerup', () => clearTimeout(longPressTimer));
     card.addEventListener('pointermove', () => clearTimeout(longPressTimer));
@@ -66,8 +71,8 @@ async function loadWardrobe() {
 async function deleteItem(id) {
   navigator.vibrate?.(50);
   if (!confirm('Remove this item from your wardrobe?')) return;
-  await fetch(`/api/clothes/${id}`, { method: 'DELETE' });
-  loadWardrobe();
+  const resp = await fetch(`/api/clothes/${id}`, { method: 'DELETE' });
+  if (resp.ok) loadWardrobe();
 }
 
 // Carousel
@@ -79,7 +84,12 @@ async function loadCarousel(item) {
   document.getElementById('carousel-pos').textContent = '';
   showScreen('carousel');
 
-  const outfits = await fetch(`/api/outfits?item_id=${item.id}`).then(r => r.json());
+  let outfits;
+  try {
+    outfits = await fetch(`/api/outfits?item_id=${item.id}`).then(r => r.json());
+  } catch {
+    return;
+  }
   const track = document.getElementById('carousel-track');
   const empty = document.getElementById('no-outfits');
   track.innerHTML = '';
