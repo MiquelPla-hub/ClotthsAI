@@ -72,6 +72,8 @@ async function deleteItem(id) {
 
 // Carousel
 
+let _carouselScrollHandler = null;
+
 async function loadCarousel(item) {
   document.getElementById('carousel-title').textContent = item.name;
   document.getElementById('carousel-pos').textContent = '';
@@ -122,10 +124,12 @@ async function loadCarousel(item) {
   });
 
   track.scrollLeft = 0;
-  track.addEventListener('scroll', () => {
+  if (_carouselScrollHandler) track.removeEventListener('scroll', _carouselScrollHandler);
+  _carouselScrollHandler = () => {
     const idx = Math.round(track.scrollLeft / track.clientWidth);
     document.getElementById('carousel-pos').textContent = `${idx + 1} / ${total}`;
-  }, { passive: true });
+  };
+  track.addEventListener('scroll', _carouselScrollHandler, { passive: true });
 }
 
 // Add Item
